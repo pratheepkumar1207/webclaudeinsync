@@ -3,6 +3,7 @@ import '../../core/api_client.dart';
 import '../../core/format.dart';
 import '../../models/notification_item.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/glass.dart';
 import '../../widgets/spinner.dart';
 import '../feed/post_detail_screen.dart';
 import '../party/party_screen.dart';
@@ -85,6 +86,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         _ => const [AppColors.accent, AppColors.primaryDim],
       };
 
+  Color _glowFor(String type) => switch (type) {
+        'room_invite' => AppColors.accent2.withValues(alpha: 0.4),
+        'mention' => AppColors.gold.withValues(alpha: 0.4),
+        _ => AppColors.accent.withValues(alpha: 0.4),
+      };
+
   @override
   Widget build(BuildContext context) {
     final unread = _items.where((n) => !n.isRead).toList();
@@ -125,11 +132,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 11),
         child: Row(
           children: [
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(shape: BoxShape.circle, gradient: LinearGradient(colors: _colorsFor(n.type))),
-              alignment: Alignment.center,
+            GlassIcon.circle(
+              size: 38,
+              colors: _colorsFor(n.type),
+              glowColor: _glowFor(n.type),
               child: Icon(_iconFor(n.type), color: Colors.white, size: 17),
             ),
             const SizedBox(width: 12),

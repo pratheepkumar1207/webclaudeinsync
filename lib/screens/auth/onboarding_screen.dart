@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/glass.dart';
 import 'login_screen.dart';
 
 const _kSeenKey = 'onboarding_seen';
@@ -79,15 +80,11 @@ class OnboardingScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       const SizedBox(height: 40),
-                      Container(
-                        width: 56,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(18),
-                          gradient: const LinearGradient(colors: AppGradients.brand),
-                          boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.5), blurRadius: 30, offset: const Offset(0, 12))],
-                        ),
-                        alignment: Alignment.center,
+                      GlassIcon(
+                        size: 56,
+                        radius: 18,
+                        colors: const [AppColors.accent2, AppColors.primary],
+                        glowColor: AppColors.primary.withValues(alpha: 0.5),
                         child: const Icon(Icons.favorite_rounded, color: Colors.white, size: 28),
                       ),
                       const SizedBox(height: 14),

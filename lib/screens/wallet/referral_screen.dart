@@ -4,6 +4,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../core/api_client.dart';
 import '../../core/api_exception.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/glass.dart';
 import '../../widgets/spinner.dart';
 
 /// "Invite friends" — matches ReferralDark.dc.html. All backend logic
@@ -106,15 +107,11 @@ class _ReferralScreenState extends State<ReferralScreen> {
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
               children: [
                 Center(
-                  child: Container(
-                    width: 76,
-                    height: 76,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(22),
-                      gradient: const LinearGradient(colors: AppGradients.brand),
-                      boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.4), blurRadius: 30, offset: const Offset(0, 16))],
-                    ),
-                    alignment: Alignment.center,
+                  child: GlassIcon(
+                    size: 76,
+                    radius: 22,
+                    colors: AppGradients.brand,
+                    glowColor: AppColors.primary.withValues(alpha: 0.4),
                     child: const Icon(Icons.people_alt_rounded, color: Colors.white, size: 32),
                   ),
                 ),
