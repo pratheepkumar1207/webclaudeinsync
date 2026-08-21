@@ -266,9 +266,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                     ],
                     _roundButton('✕', AppColors.danger, () => _handleSwipe('pass')),
                     const SizedBox(width: 20),
-                    _roundButton('★', AppColors.accent, () => _handleSwipe('superlike')),
+                    _roundButton('♥', AppColors.primary, () => _handleSwipe('like'), filled: true, large: true),
                     const SizedBox(width: 20),
-                    _roundButton('♥', AppColors.primary, () => _handleSwipe('like'), filled: true),
+                    _roundButton('★', AppColors.accent2, () => _handleSwipe('superlike')),
                   ],
                 ),
               ),
@@ -299,8 +299,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     );
   }
 
-  Widget _roundButton(String label, Color color, VoidCallback onTap, {bool small = false, bool filled = false}) {
-    final size = small ? 42.0 : 56.0;
+  Widget _roundButton(String label, Color color, VoidCallback onTap, {bool small = false, bool filled = false, bool large = false}) {
+    final size = small ? 42.0 : (large ? 70.0 : 56.0);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -314,7 +314,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
           boxShadow: filled ? [BoxShadow(color: AppColors.primary.withValues(alpha: 0.5), blurRadius: 14, offset: const Offset(0, 3))] : null,
         ),
         alignment: Alignment.center,
-        child: Text(label, style: TextStyle(color: filled ? Colors.white : color, fontSize: small ? 18 : 24)),
+        child: Text(label, style: TextStyle(color: filled ? Colors.white : color, fontSize: small ? 18 : (large ? 28 : 24))),
       ),
     );
   }

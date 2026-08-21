@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../core/api_client.dart';
 import '../../core/socket_service.dart';
@@ -43,6 +46,8 @@ class CallScreen extends StatefulWidget {
 class _CallScreenState extends State<CallScreen> {
   late final DirectCallController _controller;
   String? _endReason;
+  Timer? _durationTimer;
+  Duration _callDuration = Duration.zero;
 
   @override
   void initState() {
@@ -98,6 +103,14 @@ class _CallScreenState extends State<CallScreen> {
             animation: _controller,
             builder: (context, _) {
               final connected = _controller.remoteUid != null;
+              // Display-only call clock — starts once the peer's media
+              // actually joins. Chrome-layer state only; never read by
+              // _controller or the hang-up/cancel logic.
+              if (connected && _durationTimer == null) {
+                _durationTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+                  if (mounted) setState(() => _callDuration += const Duration(seconds: 1));
+                });
+              }
               return Stack(
                 fit: StackFit.expand,
                 children: [
@@ -105,31 +118,108 @@ class _CallScreenState extends State<CallScreen> {
                     _remoteVideo()
                   else
                     Container(
-                      color: AppColors.bg,
-                      alignment: Alignment.center,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [AppColors.surface2, AppColors.bg],
+                        ),
+                      ),
+                      child: Stack(
                         children: [
-                          Avatar(src: widget.peerAvatarUrl, name: widget.peerName, size: AvatarSize.lg),
-                          const SizedBox(height: 16),
-                          Text(widget.peerName, style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 8),
-                          Text(
-                            _endReason ?? (connected ? (widget.video ? 'Connecting video…' : 'Connected') : (widget.isCaller ? 'Calling…' : 'Connecting…')),
-                            style: const TextStyle(color: AppColors.textFaint, fontSize: 14),
+                          Positioned(
+                            top: -80,
+                            left: 0,
+                            right: 0,
+                            child: Center(
+                              child: Opacity(
+                                opacity: 0.6,
+                                child: Blob(color: AppColors.primary, size: 260),
+                              ),
+                            ),
+                          ),
+                          Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  _endReason ?? (connected ? (widget.video ? 'Connecting video…' : 'Connected') : (widget.isCaller ? 'Calling…' : 'Connecting…')),
+                                  style: TextStyle(color: Colors.white.withValues(alpha: 0.55), fontSize: 12, fontWeight: FontWeight.w600),
+                                ),
+                                const SizedBox(height: 18),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    boxShadow: [BoxShadow(color: Colors.white.withValues(alpha: 0.06), spreadRadius: 10)],
+                                  ),
+                                  child: Avatar(src: widget.peerAvatarUrl, name: widget.peerName, size: AvatarSize.lg),
+                                ),
+                                const SizedBox(height: 18),
+                                Text(
+                                  widget.peerName,
+                                  style: GoogleFonts.bricolageGrotesque(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w700),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  widget.video ? 'Video call' : 'Audio call',
+                                  style: const TextStyle(color: AppColors.textFaint, fontSize: 12.5),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (widget.video && connected)
+                    Positioned(
+                      top: 12,
+                      left: 20,
+                      right: 20,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(widget.peerName, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
+                                const SizedBox(height: 3),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      width: 6,
+                                      height: 6,
+                                      decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.success),
+                                    ),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      _formatDuration(_callDuration),
+                                      style: TextStyle(color: Colors.white.withValues(alpha: 0.65), fontSize: 11.5),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
                   if (widget.video && _controller.joined && _controller.cameraEnabled)
                     Positioned(
-                      top: 16,
+                      top: 68,
                       right: 16,
-                      width: 100,
-                      height: 140,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: AgoraVideoView(controller: VideoViewController(rtcEngine: _controller.engine!, canvas: const VideoCanvas(uid: 0))),
+                      width: 96,
+                      height: 136,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 1.5),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: AgoraVideoView(controller: VideoViewController(rtcEngine: _controller.engine!, canvas: const VideoCanvas(uid: 0))),
+                        ),
                       ),
                     ),
                   Positioned(
@@ -184,6 +274,12 @@ class _CallScreenState extends State<CallScreen> {
     );
   }
 
+  String _formatDuration(Duration d) {
+    final minutes = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '$minutes:$seconds';
+  }
+
   Widget _circleButton({required IconData icon, required VoidCallback onTap, required List<Color> colors, required Color glowColor, double size = 52}) {
     return GestureDetector(
       onTap: onTap,
@@ -198,6 +294,7 @@ class _CallScreenState extends State<CallScreen> {
 
   @override
   void dispose() {
+    _durationTimer?.cancel();
     _controller.dispose();
     super.dispose();
   }

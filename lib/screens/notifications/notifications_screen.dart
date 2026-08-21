@@ -128,7 +128,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     return GestureDetector(
       onTap: () => _open(n),
       child: Container(
-        color: n.isRead ? null : AppColors.accent.withValues(alpha: 0.08),
+        color: n.isRead ? null : AppColors.accent.withValues(alpha: 0.16),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 11),
         child: Row(
           children: [

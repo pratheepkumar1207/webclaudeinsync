@@ -325,16 +325,36 @@ class _CreatorProfileScreenState extends State<CreatorProfileScreen> {
   // is VIP, since seeing someone's live room activity is a VIP perk.
   // Matches the fling-redesign design canvas's CreatorProfile "Right now"
   // card: a glass-3D room-type icon, a pulsing live dot, the room name,
-  // and a Join action.
+  // and a Join action. Tint/icon/label vary by roomType — 'game' and
+  // 'watch' get their own look (CreatorProfileGameRoom(Dark).dc.html /
+  // CreatorProfileWatchParty(Dark).dc.html); other types (voice, live,
+  // unknown) keep the original mic/accent treatment.
   Widget _activeRoomBadge(Map activeRoom) {
     final roomId = activeRoom['roomId'] as String;
     final title = activeRoom['title'] as String? ?? 'a room';
+    final roomType = activeRoom['roomType'] as String?;
+    final memberCount = activeRoom['memberCount'] as int?;
+
+    // Same per-type colors as home_screen.dart's _typeBadges, so a room
+    // reads consistently whether seen on Home or here.
+    final (Color tint, IconData icon, String label) = switch (roomType) {
+      'game' => (const Color(0xFF2E9E5B), Icons.sports_esports_rounded, 'IN A GAME ROOM'),
+      'watch' => (const Color(0xFF4272D9), Icons.play_arrow_rounded, 'IN A WATCH PARTY'),
+      _ => (AppColors.accent, Icons.mic_rounded, 'IN A ROOM'),
+    };
+    final iconGradient = (roomType == 'game' || roomType == 'watch') ? _roomIconGradient(tint) : const [AppColors.accent2, AppColors.primary];
+    final watchingLabel = switch (roomType) {
+      'voice' => 'listening',
+      'game' => 'spectating',
+      _ => 'watching',
+    };
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.accent.withValues(alpha: 0.1),
+        color: tint.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.accent.withValues(alpha: 0.35)),
+        border: Border.all(color: tint.withValues(alpha: 0.35)),
       ),
       child: Row(
         children: [
@@ -344,9 +364,9 @@ class _CreatorProfileScreenState extends State<CreatorProfileScreen> {
               GlassIcon(
                 size: 40,
                 radius: 12,
-                colors: const [AppColors.accent2, AppColors.primary],
-                glowColor: AppColors.accent.withValues(alpha: 0.4),
-                child: const Icon(Icons.mic_rounded, color: Colors.white, size: 18),
+                colors: iconGradient,
+                glowColor: tint.withValues(alpha: 0.4),
+                child: Icon(icon, color: Colors.white, size: 18),
               ),
               Positioned(
                 top: -2,
@@ -356,7 +376,7 @@ class _CreatorProfileScreenState extends State<CreatorProfileScreen> {
                   height: 10,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.accent,
+                    color: tint,
                     border: Border.all(color: AppColors.surface, width: 1.5),
                   ),
                 ),
@@ -371,13 +391,17 @@ class _CreatorProfileScreenState extends State<CreatorProfileScreen> {
               children: [
                 Row(
                   children: [
-                    Container(width: 6, height: 6, decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.accent)),
+                    Container(width: 6, height: 6, decoration: BoxDecoration(shape: BoxShape.circle, color: tint)),
                     const SizedBox(width: 5),
-                    Text('IN A ROOM', style: TextStyle(color: AppColors.accent, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
+                    Text(label, style: TextStyle(color: tint, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
                   ],
                 ),
                 const SizedBox(height: 2),
                 Text(title, style: const TextStyle(color: AppColors.text, fontSize: 13.5, fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis),
+                if (memberCount != null) ...[
+                  const SizedBox(height: 1),
+                  Text('$memberCount $watchingLabel', style: const TextStyle(color: AppColors.textFaint, fontSize: 11)),
+                ],
               ],
             ),
           ),
@@ -397,6 +421,10 @@ class _CreatorProfileScreenState extends State<CreatorProfileScreen> {
       ),
     );
   }
+
+  // Lighter-to-darker two-stop gradient derived from a per-type tint, for
+  // the "Right now" icon chip's glass-3D background (game/watch variants).
+  List<Color> _roomIconGradient(Color tint) => [Color.lerp(tint, Colors.white, 0.35)!, Color.lerp(tint, Colors.black, 0.3)!];
 
   Widget _supporterTile(int rank, Map<String, dynamic> supporter) => GestureDetector(
         onTap: () => Navigator.of(context).push(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/api_client.dart';
 import '../../core/api_exception.dart';
+import '../../core/format.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/spinner.dart';
 
@@ -187,7 +188,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(title, style: const TextStyle(color: AppColors.text, fontSize: 12.5, fontWeight: FontWeight.w600)),
-                          Text('Submitted', style: const TextStyle(color: AppColors.textFaint, fontSize: 10.5)),
+                          Text('Submitted ${formatRelativeTime(DateTime.tryParse(c['createdAt']?.toString() ?? ''))}', style: const TextStyle(color: AppColors.textFaint, fontSize: 10.5)),
                         ],
                       ),
                     ),

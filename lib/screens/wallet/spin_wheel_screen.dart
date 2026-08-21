@@ -125,7 +125,12 @@ class _SpinWheelScreenState extends State<SpinWheelScreen> with SingleTickerProv
     final canSpin = _canSpin && !_spinning;
     return Scaffold(
       backgroundColor: const Color(0xFF241D33),
-      appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0, title: const Text('Daily Spin', style: TextStyle(color: Colors.white))),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(icon: const Icon(Icons.close, color: Colors.white, size: 21), onPressed: () => Navigator.of(context).pop()),
+        title: const Text('Daily Spin', style: TextStyle(color: Colors.white)),
+      ),
       body: Column(
         children: [
           Expanded(
@@ -134,8 +139,8 @@ class _SpinWheelScreenState extends State<SpinWheelScreen> with SingleTickerProv
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   SizedBox(
-                    width: 260,
-                    height: 260,
+                    width: 280,
+                    height: 280,
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
@@ -147,19 +152,19 @@ class _SpinWheelScreenState extends State<SpinWheelScreen> with SingleTickerProv
                               shape: BoxShape.circle,
                               gradient: SweepGradient(colors: [..._segmentColors, _segmentColors.first]),
                               border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 6),
-                              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 40, offset: const Offset(0, 20))],
+                              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 50, offset: const Offset(0, 20))],
                             ),
                           ),
                         ),
                         Container(
-                          width: 60,
-                          height: 60,
+                          width: 64,
+                          height: 64,
                           decoration: BoxDecoration(color: AppColors.surface, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 14, offset: const Offset(0, 6))]),
                           alignment: Alignment.center,
-                          child: const Icon(Icons.favorite_rounded, color: AppColors.accent, size: 24),
+                          child: const Icon(Icons.favorite_rounded, color: AppColors.accent, size: 26),
                         ),
                         const Positioned(
-                          top: -6,
+                          top: -10,
                           child: Icon(Icons.arrow_drop_down_rounded, color: AppColors.gold, size: 46),
                         ),
                       ],
@@ -213,24 +218,28 @@ class _SpinWheelScreenState extends State<SpinWheelScreen> with SingleTickerProv
                   const Text('No spins yet.', style: TextStyle(color: Colors.white38, fontSize: 12))
                 else
                   Row(
-                    children: _history.take(3).map((h) {
-                      final coins = (h['coins'] as num?)?.toInt() ?? 0;
-                      final date = DateTime.tryParse(h['createdAt']?.toString() ?? '');
-                      return Expanded(
-                        child: Container(
-                          margin: const EdgeInsets.only(right: 8),
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
-                          alignment: Alignment.center,
-                          child: Column(
-                            children: [
-                              Text(date != null ? formatRelativeTime(date) : '', style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 9.5)),
-                              Text('+$coins', style: const TextStyle(color: AppColors.gold, fontSize: 13, fontWeight: FontWeight.w700)),
-                            ],
+                    children: () {
+                      final recent = _history.take(3).toList();
+                      return List.generate(recent.length, (i) {
+                        final h = recent[i];
+                        final coins = (h['coins'] as num?)?.toInt() ?? 0;
+                        final date = DateTime.tryParse(h['createdAt']?.toString() ?? '');
+                        return Expanded(
+                          child: Container(
+                            margin: EdgeInsets.only(right: i < recent.length - 1 ? 8 : 0),
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
+                            alignment: Alignment.center,
+                            child: Column(
+                              children: [
+                                Text(date != null ? formatRelativeTime(date) : '', style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 9.5)),
+                                Text('+$coins', style: const TextStyle(color: AppColors.gold, fontSize: 13, fontWeight: FontWeight.w700)),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    }).toList(),
+                        );
+                      });
+                    }(),
                   ),
               ],
             ),

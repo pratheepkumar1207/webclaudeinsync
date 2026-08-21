@@ -102,16 +102,16 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> with SingleTicker
             children: [
               Positioned.fill(child: _buildMedia(item)),
               Positioned(
-                top: 8,
-                left: 8,
-                right: 8,
+                top: 14,
+                left: 14,
+                right: 14,
                 child: Row(
                   children: List.generate(group.items.length, (i) {
                     return Expanded(
                       child: Container(
-                        height: 2,
-                        margin: const EdgeInsets.symmetric(horizontal: 2),
-                        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(2)),
+                        height: 3,
+                        margin: const EdgeInsets.symmetric(horizontal: 2.5),
+                        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.35), borderRadius: BorderRadius.circular(2)),
                         child: AnimatedBuilder(
                           animation: _controller,
                           builder: (context, _) {
@@ -129,13 +129,16 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> with SingleTicker
                 ),
               ),
               Positioned(
-                top: 20,
-                left: 12,
-                right: 12,
+                top: 26,
+                left: 14,
+                right: 14,
                 child: Row(
                   children: [
-                    Avatar(src: group.avatarUrl, name: group.name, size: AvatarSize.sm),
-                    const SizedBox(width: 8),
+                    Container(
+                      decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 1.5)),
+                      child: Avatar(src: group.avatarUrl, name: group.name, size: AvatarSize.sm),
+                    ),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,7 +148,7 @@ class _StoryViewerScreenState extends State<StoryViewerScreen> with SingleTicker
                         ],
                       ),
                     ),
-                    IconButton(onPressed: () => Navigator.of(context).pop(), icon: const Icon(Icons.close, color: Colors.white)),
+                    IconButton(onPressed: () => Navigator.of(context).pop(), icon: const Icon(Icons.close, color: Colors.white), iconSize: 20),
                   ],
                 ),
               ),
