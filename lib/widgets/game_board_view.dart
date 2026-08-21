@@ -33,8 +33,12 @@ class GameBoardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (game == null) {
+      // Square, not 16:9 — every board this wraps (chess/ludo/tictactoe/
+      // uno) is square, matching GameRoomDark.dc.html's 320x320 board
+      // frame, so the pre-game placeholder doesn't reflow into a
+      // differently-shaped card once a match actually starts.
       return AspectRatio(
-        aspectRatio: 16 / 9,
+        aspectRatio: 1,
         child: Container(
           decoration: BoxDecoration(color: AppColors.surface2, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.border)),
           alignment: Alignment.center,
@@ -71,7 +75,7 @@ class GameBoardView extends StatelessWidget {
     }
 
     return AspectRatio(
-      aspectRatio: 16 / 9,
+      aspectRatio: 1,
       child: Container(
         decoration: BoxDecoration(color: AppColors.surface2, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.border)),
         alignment: Alignment.center,

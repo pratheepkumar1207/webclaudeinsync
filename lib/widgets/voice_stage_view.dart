@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../core/profile_nav.dart';
 import '../models/room_models.dart';
+import '../theme/app_colors.dart';
 import '../theme/club_room_colors.dart';
+import '../theme/glass.dart';
 import 'avatar.dart';
 
 /// 8-slot mic stage for Voice rooms — occupied slots show whoever the host
@@ -123,7 +125,24 @@ class VoiceStageView extends StatelessWidget {
                     clipBehavior: Clip.none,
                     children: [
                       p != null
-                          ? GestureDetector(onTap: () => openProfile(context, uid), child: Avatar(src: p.avatarUrl, name: p.name, size: AvatarSize.md))
+                          ? GestureDetector(
+                              onTap: () => openProfile(context, uid),
+                              // Padding+glow-ring mirrors the mockup's
+                              // sp-ring: a colored frame when this stage
+                              // participant's mic is actually live (per
+                              // RosterEntry.micOn, independent of just
+                              // holding a stage slot), matching the same
+                              // micOn->green-ring convention as
+                              // ParticipantAvatarRow. Transparent-but-same
+                              // padding when off so tiles don't resize.
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 220),
+                                curve: kGlassCurve,
+                                padding: const EdgeInsets.all(3),
+                                decoration: p.micOn ? glowRingDecoration(color: AppColors.success) : const BoxDecoration(shape: BoxShape.circle),
+                                child: Avatar(src: p.avatarUrl, name: p.name, size: AvatarSize.md),
+                              ),
+                            )
                           : Container(
                               width: 48,
                               height: 48,
@@ -133,10 +152,24 @@ class VoiceStageView extends StatelessWidget {
                             ),
                       if (p != null && uid == hostId)
                         const Positioned(top: -2, right: -2, child: Text('👑', style: TextStyle(fontSize: 12))),
+                      if (p != null)
+                        Positioned(
+                          bottom: -1,
+                          right: -1,
+                          child: Container(
+                            width: 16,
+                            height: 16,
+                            decoration: BoxDecoration(color: ClubRoomColors.surface2, shape: BoxShape.circle, border: Border.all(color: ClubRoomColors.surface2, width: 2)),
+                            alignment: Alignment.center,
+                            child: Icon(p.micOn ? Icons.mic_rounded : Icons.mic_off_rounded, size: 9, color: p.micOn ? AppColors.success : ClubRoomColors.textFaint),
+                          ),
+                        ),
+                      // Moderation control moved to top-left (crown already
+                      // owns top-right, mic badge now owns bottom-right).
                       if (isHost && p != null && uid != hostId)
                         Positioned(
-                          bottom: -2,
-                          right: -2,
+                          top: -2,
+                          left: -2,
                           child: GestureDetector(
                             onTap: () => onRemove(uid!),
                             child: Container(
@@ -152,7 +185,7 @@ class VoiceStageView extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    p != null ? (isMe ? 'You' : p.name) : '',
+                    p != null ? (isMe ? 'You' : p.name) : 'Open',
                     style: const TextStyle(color: ClubRoomColors.textDim, fontSize: 10),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
