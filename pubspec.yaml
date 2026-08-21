@@ -1,0 +1,140 @@
+name: fling
+description: Insync — watch parties, swipe matching, social feed, chat, and calls.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  # Bricolage Grotesque (display) + Plus Jakarta Sans (body) — matches the
+  # Claude Design redesign's type pairing (fling-redesign design canvas).
+  google_fonts: ^6.2.1
+
+  # Networking / realtime
+  http: ^1.2.1
+  socket_io_client: ^2.0.3+1
+
+  # Firebase phone auth (mirrors src/lib/firebase.js on the web app)
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.1
+  # Push notifications — requests permission + FCM token, registered via
+  # POST /auth/fcm-token (see SafetyGuidelinesScreen).
+  firebase_messaging: ^15.1.3
+  # "Connect Google account" for the Rave-style YouTube/Drive source picker
+  # (see source_picker_screen.dart) — separate from firebase_auth's phone
+  # login above; this requests youtube.readonly + drive.readonly scopes and
+  # hands the resulting serverAuthCode to POST /auth/google/connect.
+  google_sign_in: ^6.2.2
+
+  # State management
+  provider: ^6.1.2
+
+  # Persistence
+  shared_preferences: ^2.2.3
+
+  # Media
+  image_picker: ^1.1.2
+  file_picker: ^8.1.2
+  cached_network_image: ^3.3.1
+  youtube_player_flutter: ^9.0.4
+  video_player: ^2.9.2
+  # Already resolved transitively via youtube_player_flutter (see the
+  # dependency_overrides note below) — declared directly too since
+  # webview_browse_screen.dart / netflix_amazon_player.dart import it for
+  # the Netflix/Prime "browse together" rooms (real embedded browser
+  # navigation, not an <iframe>, so their anti-embedding headers don't
+  # apply — see Room.js's sourceType comment for why there's no playback
+  # sync for these two).
+  flutter_inappwebview: ^6.2.0-beta.3
+
+  # Voice chat
+  # Pinned exactly (not ^) — every version tried (6.3.2, 6.5.4, 6.6.3) ships
+  # native SDK AARs with a structural namespace collision (two modules both
+  # declare `io.agora.rtc`) that breaks Android's manifest merger under
+  # modern AGP — confirmed via Agora's own GitHub issues, not fixable from
+  # this project's build.gradle. Blocks `flutter build apk` specifically;
+  # doesn't affect the web build or the Dart code itself. See README.
+  agora_rtc_engine: 6.3.2
+  permission_handler: ^11.3.1
+
+  # Map-based Discover — real GPS, opt-in only (see User.locationSharingEnabled
+  # on the backend). flutter_map uses OpenStreetMap tiles, no API key needed
+  # (unlike Google Maps, which would need a billing-enabled API key this repo
+  # doesn't have — same "needs your own credentials" category as Razorpay/
+  # Firebase/Tenor elsewhere in this app).
+  geolocator: ^13.0.1
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+
+  # Coin purchases — opens Razorpay's native checkout UI and reports back
+  # payment success/error, which wallet_buy_screen.dart then sends to
+  # POST /wallet/buy/verify for server-side signature verification before
+  # crediting coins. Needs a real Razorpay key (from POST /wallet/buy/order's
+  # `key` field, sourced server-side — no client-side key configuration
+  # needed here) — same "needs your own account" category as Firebase phone
+  # auth and Agora elsewhere in this app.
+  razorpay_flutter: ^1.4.5
+
+  # Utilities
+  intl: ^0.19.0
+  url_launcher: ^6.3.0
+  share_plus: ^10.0.0
+  # Real background/lock-screen audio for Drive-hosted rooms — a native
+  # foreground media session, not just "keep the socket alive" like
+  # flutter_foreground_task already does elsewhere. See
+  # core/background_audio_handler.dart.
+  audio_service: ^0.18.15
+  just_audio: ^0.9.40
+  # Real brand glyphs for the source-picker tiles (YouTube, Drive, Netflix,
+  # Amazon, X) — only covers globally-recognized brands; the India-specific
+  # streaming services (Hotstar/Aha/SunNXT/SonyLIV/Airtel Xstream) have no
+  # icon here and use a colored letter-badge instead (see source_picker_screen.dart).
+  font_awesome_flutter: ^11.0.0
+  # Keeps the socket connection (and thus room presence/playback sync) alive
+  # while the app is backgrounded — without a real foreground service,
+  # Android suspends the process's network activity after a short grace
+  # period, which silently disconnects the room socket, drops the user from
+  # the live roster (see syncHandler.js's disconnect handler), and makes an
+  # active room vanish from everyone else's Lobby list. Started when a user
+  # joins a room, stopped when they explicitly leave/close it (see
+  # party_screen.dart) — never runs outside an active room.
+  flutter_foreground_task: ^10.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  # One-off codegen tool for the Insync rebrand — generates every Android
+  # mipmap density + iOS AppIcon.appiconset size from the single source
+  # image below. Re-run `dart run flutter_launcher_icons` if the logo
+  # changes again; the generated files are what actually ship, this
+  # package doesn't run at app runtime.
+  flutter_launcher_icons: ^0.13.1
+
+# youtube_player_flutter pulls in flutter_inappwebview, whose Android
+# implementation (1.1.3, under the latest stable 6.1.5) still uses the
+# deprecated getDefaultProguardFile('proguard-android.txt') API that modern
+# AGP/R8 rejects outright. Overriding just the _android sub-package broke
+# the federated plugin's own internal version matching (its other
+# sub-packages stayed pinned to versions incompatible with the newer
+# _android release) — override the top-level package instead so pub
+# resolves a consistent set of federated sub-package versions together.
+dependency_overrides:
+  flutter_inappwebview: ^6.2.0-beta.3
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icon/insync-icon.png
+    - assets/icons/rooms/
+    - assets/icons/app/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/insync-icon.png"
+  min_sdk_android: 21
