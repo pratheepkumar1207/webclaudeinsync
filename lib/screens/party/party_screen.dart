@@ -9,7 +9,6 @@ import '../../core/profile_nav.dart';
 import '../../core/room_presence_service.dart';
 import '../../core/socket_service.dart';
 import '../../theme/app_colors.dart';
-import '../../theme/club_room_colors.dart';
 import '../../theme/vola_party_colors.dart';
 import '../../widgets/gift_bottom_sheet.dart';
 import '../../widgets/game_board_view.dart';
@@ -320,7 +319,7 @@ class _PartyScreenState extends State<PartyScreen> with WidgetsBindingObserver {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: isVoice ? ClubRoomColors.surface : AppColors.surface,
+      backgroundColor: isVoice ? AppColors.surface : AppColors.surface,
       builder: (_) => AnimatedBuilder(
         animation: rs,
         builder: (context, _) => SizedBox(
@@ -500,15 +499,15 @@ class _PartyScreenState extends State<PartyScreen> with WidgetsBindingObserver {
     // unchanged below. Watch Party's background is an actual gradient
     // (see roomBgGradient), not a flat color, so roomBg only matters for
     // Voice/default.
-    final roomBg = isVoice ? ClubRoomColors.bg : AppColors.bg;
+    final roomBg = isVoice ? AppColors.bg : AppColors.bg;
     final roomBgGradient = isWatch ? VolaPartyColors.bgGradient : null;
-    final roomSurface = isVoice ? ClubRoomColors.surface : (isWatch ? VolaPartyColors.surface : AppColors.surface);
-    final roomBorder = isVoice ? ClubRoomColors.border : (isWatch ? VolaPartyColors.border : AppColors.border);
-    final roomTextDim = isVoice ? ClubRoomColors.textDim : (isWatch ? VolaPartyColors.textDim : AppColors.textDim);
-    final roomPrimary = isVoice ? ClubRoomColors.primary : (isWatch ? VolaPartyColors.primary : AppColors.primary);
-    final roomGold = isVoice ? ClubRoomColors.gold : (isWatch ? VolaPartyColors.gold : AppColors.gold);
-    final roomDanger = isVoice ? ClubRoomColors.danger : (isWatch ? VolaPartyColors.danger : AppColors.danger);
-    final roomText = isVoice ? ClubRoomColors.text : (isWatch ? VolaPartyColors.text : AppColors.text);
+    final roomSurface = isVoice ? AppColors.surface : (isWatch ? VolaPartyColors.surface : AppColors.surface);
+    final roomBorder = isVoice ? AppColors.border : (isWatch ? VolaPartyColors.border : AppColors.border);
+    final roomTextDim = isVoice ? AppColors.textDim : (isWatch ? VolaPartyColors.textDim : AppColors.textDim);
+    final roomPrimary = isVoice ? AppColors.primary : (isWatch ? VolaPartyColors.primary : AppColors.primary);
+    final roomGold = isVoice ? AppColors.gold : (isWatch ? VolaPartyColors.gold : AppColors.gold);
+    final roomDanger = isVoice ? AppColors.danger : (isWatch ? VolaPartyColors.danger : AppColors.danger);
+    final roomText = isVoice ? AppColors.text : (isWatch ? VolaPartyColors.text : AppColors.text);
     final myId = context.read<AuthProvider>().user?.id;
     final hostRoster = rs.roster.where((r) => r.userId == rs.hostId);
     final hostName = hostRoster.isNotEmpty ? hostRoster.first.name : (room['hostName'] as String? ?? 'Host');
@@ -582,8 +581,8 @@ class _PartyScreenState extends State<PartyScreen> with WidgetsBindingObserver {
         onForceUnmute: rs.forceUnmuteMic,
       ),
       appBar: AppBar(
-        backgroundColor: isVoice ? ClubRoomColors.surface.withValues(alpha: 0.85) : (isWatch ? VolaPartyColors.surface.withValues(alpha: 0.7) : null),
-        foregroundColor: isVoice ? ClubRoomColors.text : (isWatch ? VolaPartyColors.text : null),
+        backgroundColor: isVoice ? AppColors.surface.withValues(alpha: 0.85) : (isWatch ? VolaPartyColors.surface.withValues(alpha: 0.7) : null),
+        foregroundColor: isVoice ? AppColors.text : (isWatch ? VolaPartyColors.text : null),
         leading: BackButton(onPressed: () => Navigator.of(context).pop()),
         title: Text(room['title'] as String? ?? '', key: _hostKey, style: const TextStyle(fontSize: 15), maxLines: 1, overflow: TextOverflow.ellipsis),
         actions: [

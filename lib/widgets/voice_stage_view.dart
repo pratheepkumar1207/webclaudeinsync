@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../core/profile_nav.dart';
 import '../models/room_models.dart';
 import '../theme/app_colors.dart';
-import '../theme/club_room_colors.dart';
 import '../theme/glass.dart';
 import 'avatar.dart';
 
@@ -43,7 +42,7 @@ class VoiceStageView extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: ClubRoomColors.surface2, borderRadius: BorderRadius.circular(14), border: Border.all(color: ClubRoomColors.border)),
+      decoration: BoxDecoration(color: AppColors.surface2, borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.border)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -52,16 +51,16 @@ class VoiceStageView extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 12),
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: ClubRoomColors.primary.withValues(alpha: 0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: ClubRoomColors.primary.withValues(alpha: 0.3)),
+                border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     '${pendingRequests.length} request${pendingRequests.length == 1 ? '' : 's'} to talk',
-                    style: const TextStyle(color: ClubRoomColors.primary, fontWeight: FontWeight.bold, fontSize: 12),
+                    style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 12),
                   ),
                   const SizedBox(height: 6),
                   ...pendingRequests.map((uid) {
@@ -77,7 +76,7 @@ class VoiceStageView extends StatelessWidget {
                               children: [
                                 Avatar(src: p?.avatarUrl, name: p?.name, size: AvatarSize.sm),
                                 const SizedBox(width: 8),
-                                Text(p?.name ?? 'Someone', style: const TextStyle(color: ClubRoomColors.text, fontSize: 13)),
+                                Text(p?.name ?? 'Someone', style: const TextStyle(color: AppColors.text, fontSize: 13)),
                               ],
                             ),
                           ),
@@ -87,7 +86,7 @@ class VoiceStageView extends StatelessWidget {
                                 onTap: () => onApprove(uid),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                  decoration: BoxDecoration(color: ClubRoomColors.primary, borderRadius: BorderRadius.circular(999)),
+                                  decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(999)),
                                   child: const Text('Approve', style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
                                 ),
                               ),
@@ -96,8 +95,8 @@ class VoiceStageView extends StatelessWidget {
                                 onTap: () => onDeny(uid),
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(999), border: Border.all(color: ClubRoomColors.border)),
-                                  child: const Text('Deny', style: TextStyle(color: ClubRoomColors.textDim, fontSize: 11)),
+                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(999), border: Border.all(color: AppColors.border)),
+                                  child: const Text('Deny', style: TextStyle(color: AppColors.textDim, fontSize: 11)),
                                 ),
                               ),
                             ],
@@ -146,9 +145,9 @@ class VoiceStageView extends StatelessWidget {
                           : Container(
                               width: 48,
                               height: 48,
-                              decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: ClubRoomColors.border, style: BorderStyle.solid)),
+                              decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: AppColors.border, style: BorderStyle.solid)),
                               alignment: Alignment.center,
-                              child: const Text('🎙️', style: TextStyle(fontSize: 18, color: ClubRoomColors.textFaint)),
+                              child: const Text('🎙️', style: TextStyle(fontSize: 18, color: AppColors.textFaint)),
                             ),
                       if (p != null && uid == hostId)
                         const Positioned(top: -2, right: -2, child: Text('👑', style: TextStyle(fontSize: 12))),
@@ -159,9 +158,9 @@ class VoiceStageView extends StatelessWidget {
                           child: Container(
                             width: 16,
                             height: 16,
-                            decoration: BoxDecoration(color: ClubRoomColors.surface2, shape: BoxShape.circle, border: Border.all(color: ClubRoomColors.surface2, width: 2)),
+                            decoration: BoxDecoration(color: AppColors.surface2, shape: BoxShape.circle, border: Border.all(color: AppColors.surface2, width: 2)),
                             alignment: Alignment.center,
-                            child: Icon(p.micOn ? Icons.mic_rounded : Icons.mic_off_rounded, size: 9, color: p.micOn ? AppColors.success : ClubRoomColors.textFaint),
+                            child: Icon(p.micOn ? Icons.mic_rounded : Icons.mic_off_rounded, size: 9, color: p.micOn ? AppColors.success : AppColors.textFaint),
                           ),
                         ),
                       // Moderation control moved to top-left (crown already
@@ -175,7 +174,7 @@ class VoiceStageView extends StatelessWidget {
                             child: Container(
                               width: 16,
                               height: 16,
-                              decoration: const BoxDecoration(color: ClubRoomColors.danger, shape: BoxShape.circle),
+                              decoration: const BoxDecoration(color: AppColors.danger, shape: BoxShape.circle),
                               alignment: Alignment.center,
                               child: const Icon(Icons.close, size: 10, color: Colors.white),
                             ),
@@ -186,7 +185,7 @@ class VoiceStageView extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     p != null ? (isMe ? 'You' : p.name) : 'Open',
-                    style: const TextStyle(color: ClubRoomColors.textDim, fontSize: 10),
+                    style: const TextStyle(color: AppColors.textDim, fontSize: 10),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../core/format.dart';
 import '../../core/profile_nav.dart';
 import '../../theme/app_colors.dart';
-import '../../theme/club_room_colors.dart';
 import '../../widgets/avatar.dart';
 
 class ChatPanel extends StatefulWidget {
@@ -44,11 +43,11 @@ class _ChatPanelState extends State<ChatPanel> {
   @override
   Widget build(BuildContext context) {
     final club = widget.clubRoomTheme;
-    final textFaint = club ? ClubRoomColors.textFaint : AppColors.textFaint;
-    final text = club ? ClubRoomColors.text : AppColors.text;
-    final textDim = club ? ClubRoomColors.textDim : AppColors.textDim;
-    final primary = club ? ClubRoomColors.primary : AppColors.primary;
-    final bubbleOther = club ? ClubRoomColors.surface2 : AppColors.surface2;
+    final textFaint = club ? AppColors.textFaint : AppColors.textFaint;
+    final text = club ? AppColors.text : AppColors.text;
+    final textDim = club ? AppColors.textDim : AppColors.textDim;
+    final primary = club ? AppColors.primary : AppColors.primary;
+    final bubbleOther = club ? AppColors.surface2 : AppColors.surface2;
     return Column(
       children: [
         Expanded(
